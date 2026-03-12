@@ -5,6 +5,7 @@ using ServerApi.Models;
 
 namespace ServerAPI.Controllers
 {
+
     [ApiController]
     [Route("api/[controller]")]
     public class UserController : ControllerBase
@@ -31,7 +32,7 @@ namespace ServerAPI.Controllers
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
-            return Ok(newUser);
+            return Ok(newUser);  
         }
 
         [HttpGet("{id}")]
