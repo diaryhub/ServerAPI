@@ -3,6 +3,7 @@ version: '3.8'
 services:
   mysql:
     image: mysql:8.0
+    restart: always
     container_name: game_mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} # 루트 계정 비밀번호 설정
@@ -15,6 +16,7 @@ services:
 
   redis:
     image: redis:alpine
+    restart: always
     container_name: game_redis
     ports:
       - "6379:6379"
@@ -23,7 +25,8 @@ services:
 
   # 새로 추가된 API 서버 블록
   server-api:
-    image: server-api:latest
+    image: dockdiary/server-api:latest
+    restart: always
     container_name: server_api
     ports:
       - "8080:8080" # 외부 접속 포트 8080을 컨테이너 내부 8080으로 연결 (.NET 8.0 기본 포트)
