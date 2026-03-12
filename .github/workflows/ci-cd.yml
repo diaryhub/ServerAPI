@@ -1,9 +1,9 @@
 name: Server CI
 
-# 1. 동작 트리거: main 브랜치에 코드가 푸시될 때마다 실행
+# 1. 동작 트리거: master 브랜치에 코드가 푸시될 때마다 실행
 on:
   push:
-    branches: [ "main" ] # 본인의 기본 브랜치명이 master일 경우 master로 변경하십시오.
+    branches: [ "master" ]
 
 jobs:
   build:
