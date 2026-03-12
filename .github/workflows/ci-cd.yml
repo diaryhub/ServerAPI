@@ -1,0 +1,20 @@
+name: Server CI
+
+# 1. 동작 트리거: main 브랜치에 코드가 푸시될 때마다 실행
+on:
+  push:
+    branches: [ "main" ] # 본인의 기본 브랜치명이 master일 경우 master로 변경하십시오.
+
+jobs:
+  build:
+    # 2. 실행 환경: GitHub이 무료로 제공하는 리눅스 서버 할당
+    runs-on: ubuntu-latest
+
+    steps:
+    # 3. 작업 1: 가상 서버로 내 리포지토리의 최신 코드 내려받기
+    - name: 레포지토리 코드 가져오기
+      uses: actions/checkout@v4
+
+    # 4. 작업 2: 로컬에서 테스트했던 도커 빌드 명령어를 가상 서버에서 똑같이 실행하여 오류 검증
+    - name: 도커 이미지 빌드 테스트
+      run: docker build -t server-api .
