@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: game_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} # 루트 계정 비밀번호 설정
+      MYSQL_DATABASE: ${MYSQL_DATABASE}           # 자동 생성될 초기 데이터베이스 이름
+      TZ: Asia/Seoul
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql       # 컨테이너가 재시작/삭제되어도 실제 데이터가 유지되도록 볼륨 설정
+
+  redis:
+    image: redis:alpine
+    container_name: game_redis
+    ports:
+      - "6379:6379"
+    environment:
+      TZ: Asia/Seoul
+
+  # 새로 추가된 API 서버 블록
+  server-api:
+    image: server-api:latest
+    container_name: server_api
+    ports:
+      - "8080:8080" # 외부 접속 포트 8080을 컨테이너 내부 8080으로 연결 (.NET 8.0 기본 포트)
+    environment:
+      # appsettings.json의 DB 연결 문자열을 환경 변수로 동적 덮어쓰기 (언더바 2개 주의)
+      - "ConnectionStrings__DefaultConnection=Server=game_mysql;Database=${MYSQL_DATABASE};User=root;Password=${MYSQL_ROOT_PASSWORD};"
+      - TZ=Asia/Seoul
+    depends_on:
+      - mysql # MySQL이 먼저 켜진 후 API 서버가 켜지도록 순서 보장
+
+volumes:
+  mysql_data:

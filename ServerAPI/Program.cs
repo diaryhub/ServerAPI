@@ -16,6 +16,14 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+// 서버 구동 시 DB 테이블 자동 생성 스크립트
+using (var scope = app.Services.CreateScope())
+{
+    // AppDbContext 부분은 본인이 실제 작성한 DbContext 클래스 이름으로 변경해야 합니다.
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.EnsureCreated();
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
