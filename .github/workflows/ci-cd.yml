@@ -12,6 +12,18 @@ jobs:
     - name: 레포지토리 코드 가져오기
       uses: actions/checkout@v4
 
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Run Unit Tests
+      run: dotnet test --no-build --verbosity normal
+
     # 1. 도커 허브 로그인 (등록한 Secrets 사용)
     - name: 도커 허브 로그인
       uses: docker/login-action@v3
