@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ServerApi.Models;
+using ServerAPI.Models;
 
 namespace ServerApi.Data
 {
@@ -11,5 +12,7 @@ namespace ServerApi.Data
         }
         // DB의 'Users' 테이블과 매핑되는 진열대 명부
         public DbSet<User> Users { get; set; }
+        public DbSet<Item> Items { get; set; } // 새로 추가
+        public DbSet<UserInventory> UserInventories { get; set; } // 새로 추가
     }
 }
