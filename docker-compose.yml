@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  database:
+  mydb:
     image: postgres:15
     restart: always
     container_name: PostgreSQL-Server
@@ -33,7 +33,7 @@ services:
       - "8080:8080" # 외부 접속 포트 8080을 컨테이너 내부 8080으로 연결 (.NET 8.0 기본 포트)
     environment:
       # appsettings.json의 DB 연결 문자열을 환경 변수로 동적 덮어쓰기 (언더바 2개 주의)
-      - "ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=${POSTGRES_DATABASE};Username=postgres;Password=${POSTGRES_ROOT_PASSWORD};"
+      - "ConnectionStrings__DefaultConnection=Host=mydb;Port=5432;Database=${POSTGRES_DATABASE};Username=postgres;Password=${POSTGRES_ROOT_PASSWORD};"
       - TZ=Asia/Seoul
     depends_on:
       - database # postgreSQL이 먼저 켜진 후 API 서버가 켜지도록 순서 보장
