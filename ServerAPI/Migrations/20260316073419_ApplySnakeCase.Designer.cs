@@ -2,9 +2,9 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ServerApi.Data;
 
 #nullable disable
@@ -12,42 +12,47 @@ using ServerApi.Data;
 namespace ServerAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260316012212_SeedInitialItems")]
-    partial class SeedInitialItems
+    [Migration("20260316073419_ApplySnakeCase")]
+    partial class ApplySnakeCase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("ProductVersion", "10.0.5")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("ServerAPI.Models.Item", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text")
+                        .HasColumnName("description");
 
                     b.Property<string>("ItemType")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text")
+                        .HasColumnName("item_type");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_items");
 
-                    b.ToTable("Items");
+                    b.ToTable("items", (string)null);
 
                     b.HasData(
                         new
@@ -77,50 +82,62 @@ namespace ServerAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<int>("Currency")
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .HasColumnName("currency");
 
                     b.Property<string>("Nickname")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("nickname");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_users");
 
-                    b.ToTable("Users");
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("ServerApi.Models.UserInventory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ItemId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .HasColumnName("item_id");
 
                     b.Property<int>("Quantity")
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .HasColumnName("quantity");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_user_inventories");
 
-                    b.HasIndex("ItemId");
+                    b.HasIndex("ItemId")
+                        .HasDatabaseName("ix_user_inventories_item_id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_user_inventories_user_id");
 
-                    b.ToTable("UserInventories");
+                    b.ToTable("user_inventories", (string)null);
                 });
 
             modelBuilder.Entity("ServerApi.Models.UserInventory", b =>
@@ -129,13 +146,15 @@ namespace ServerAPI.Migrations
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_user_inventories_items_item_id");
 
                     b.HasOne("ServerApi.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_user_inventories_users_user_id");
 
                     b.Navigation("Item");
 

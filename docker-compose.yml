@@ -1,18 +1,19 @@
 version: '3.8'
 
 services:
-  mysql:
-    image: mysql:8.0
+  database:
+    image: postgres:15
     restart: always
-    container_name: game_mysql
+    container_name: PostgreSQL-Server
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} # 루트 계정 비밀번호 설정
-      MYSQL_DATABASE: ${MYSQL_DATABASE}           # 자동 생성될 초기 데이터베이스 이름
+      POSTGRES_DB: mydb
+      POSTGRES_USER: ${POSTGRES_DATABASE}
+      POSTGRES_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
       TZ: Asia/Seoul
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - mysql_data:/var/lib/mysql       # 컨테이너가 재시작/삭제되어도 실제 데이터가 유지되도록 볼륨 설정
+      - postgres_data:/var/lib/postgresql/data
 
   redis:
     image: redis:alpine
@@ -32,10 +33,10 @@ services:
       - "8080:8080" # 외부 접속 포트 8080을 컨테이너 내부 8080으로 연결 (.NET 8.0 기본 포트)
     environment:
       # appsettings.json의 DB 연결 문자열을 환경 변수로 동적 덮어쓰기 (언더바 2개 주의)
-      - "ConnectionStrings__DefaultConnection=Server=game_mysql;Database=${MYSQL_DATABASE};User=root;Password=${MYSQL_ROOT_PASSWORD};"
+      - "ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=${POSTGRES_DATABASE};Username=postgres;Password=${POSTGRES_ROOT_PASSWORD};"
       - TZ=Asia/Seoul
     depends_on:
-      - mysql # MySQL이 먼저 켜진 후 API 서버가 켜지도록 순서 보장
+      - database # postgreSQL이 먼저 켜진 후 API 서버가 켜지도록 순서 보장
 
 volumes:
-  mysql_data:
+  postgres_data:
