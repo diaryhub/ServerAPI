@@ -1,10 +1,11 @@
 # 수집형 RPG 가챠(Gacha) 서버 API - 트랜잭션 정합성 및 성능 최적화
 
-대규모 동시 접속(신규 픽업 배너 오픈) 시 발생하는 RDBMS 병목을 분석하고 성능을 튜닝하는 과정에 집중한 수집형 RPG 가챠 서버 API입니다. 게임의 핵심 비즈니스 로직(결제 및 아이템 지급)에서 요구되는 엄격한 트랜잭션 정합성과 데이터 무결성 보장을 목표로 설계되었습니다.
+대규모 동시 접속(신규 픽업 배너 오픈) 시 발생하는 RDBMS 병목을 분석하고 성능을 튜닝하는 과정에 집중한 수집형 RPG 가챠 서버 API입니다. 게임의 핵심 비즈니스 로직(결제 및 아이템 지급)에서 요구되는 엄격한 트랜잭션 정합성과 데이터 무결성 보장, 그리고 자동화된 CI/CD 배포 파이프라인 구축을 목표로 설계되었습니다.
 
 ## 🛠 Tech Stack
 * **Backend:** C# .NET 10.0, Entity Framework Core
 * **Database & Cache:** PostgreSQL, Redis
+* **Infra & CI/CD:** AWS EC2 (Ubuntu), Docker, GitHub Actions
 * **Test & Metrics:** k6 (Load Testing), Postman
 * **Security:** JWT (JSON Web Token)
 
@@ -21,6 +22,13 @@
 
 ### 3. Redis Cache-Aside 패턴 적용
 * 가챠 확률 메타데이터의 정적 특성을 활용하여 Redis 인메모리 캐싱을 적용했습니다. 식별자(BannerId) 기반으로 캐시 키를 격리하여 RDBMS의 Read 부하(Select Query)를 최소화했습니다.
+
+---
+
+## ⚙️ 인프라 및 CI/CD 파이프라인
+* **Docker 컨테이너화:** PostgreSQL, Redis 및 .NET API 서버를 Docker 컨테이너로 패키징하여 로컬과 운영 환경의 일관성을 확보했습니다.
+* **자동화된 배포(GitHub Actions):** 코드 커밋 시 GitHub Actions Workflow가 트리거되어 빌드 및 테스트를 자동으로 수행합니다.
+* **AWS EC2 호스팅:** 개인 키(Private Key)를 통한 SSH 접속으로 AWS EC2(Ubuntu) 인스턴스에 접근하여, 최신 Docker 이미지를 풀(Pull)하고 무중단으로 컨테이너를 재기동하는 배포 파이프라인을 구축했습니다.
 
 ---
 
