@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using ServerApi.Data;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +16,29 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 // 2. DbContext 등록 (postgreSQL 연결 설정)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")).UseSnakeCaseNamingConvention());
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    // appsettings.json의 RedisConnection 값을 읽어와 6379 포트로 연결을 시도합니다.
+    options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
+    options.InstanceName = "RedisServer";
+});
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
+    });
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -31,6 +57,8 @@ using (var scope = app.Services.CreateScope())
     dbContext.Database.Migrate();
 }
 app.UseRouting(); // [추가 권장] 명시적으로 라우팅 활성화
+
+app.UseAuthentication(); // [핵심] 반드시 UseAuthorization() 보다 먼저 호출되어야 합니다.
 
 app.UseAuthorization();
 

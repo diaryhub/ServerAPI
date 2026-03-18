@@ -8,18 +8,12 @@ namespace ServerAPI.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController : ControllerBase
+    public class UserController(AppDbContext context) : ControllerBase
     {
-        private readonly AppDbContext _context;
-
-        public UserController(AppDbContext context) {
-            _context = context;
-        }
-
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] string nickname) {
 
-            if (await _context.Users.AnyAsync(u => u.Nickname == nickname)) {
+            if (await context.Users.AnyAsync(u => u.Nickname == nickname)) {
                 return BadRequest("이미 존재하는 닉네임 입니다.");
             }
 
@@ -29,15 +23,15 @@ namespace ServerAPI.Controllers
                 Currency = 1000
             };
 
-            _context.Users.Add(newUser);
-            await _context.SaveChangesAsync();
+            context.Users.Add(newUser);
+            await context.SaveChangesAsync();
 
             return Ok(newUser);  
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id) { 
-            var user = await _context.Users.FindAsync(id);
+            var user = await context.Users.FindAsync(id);
 
             if (user == null) {
                 return NotFound("사용자를 찾을 수 없습니다.");

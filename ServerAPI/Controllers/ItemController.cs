@@ -7,25 +7,18 @@ namespace ServerApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ItemController : ControllerBase
+    public class ItemController(AppDbContext context) : ControllerBase
     {
-        private readonly AppDbContext _context;
-
-        public ItemController(AppDbContext context)
-        {
-            _context = context;
-        }
-
         [HttpPost("gacha/{userId}")]
         public async Task<IActionResult> RollGacha(int userId)
         {
             // 1. 유저 존재 여부 검증
-            var user = await _context.Users.FindAsync(userId);
+            var user = await context.Users.FindAsync(userId);
             if (user == null)
                 return NotFound("해당 유저를 찾을 수 없습니다.");
 
             // 2. 전체 아이템 목록 조회 (현재는 DB에서 직접 조회하지만, 실무에선 메모리에 캐싱함)
-            var items = await _context.Items.ToListAsync();
+            var items = await context.Items.ToListAsync();
             if (items.Count < 1)
                 return BadRequest("서버에 등록된 아이템이 없습니다.");
 
@@ -34,7 +27,7 @@ namespace ServerApi.Controllers
             var selectedItem = items[random.Next(items.Count)];
 
             // 4. 유저 인벤토리 확인 (보유 여부에 따라 INSERT 또는 UPDATE)
-            var inventoryItem = await _context.UserInventories
+            var inventoryItem = await context.UserInventories
                 .FirstOrDefaultAsync(i => i.UserId == userId && i.ItemId == selectedItem.Id);
 
             if (inventoryItem != null)
@@ -45,7 +38,7 @@ namespace ServerApi.Controllers
             else
             {
                 // 미보유 아이템이면 인벤토리에 신규 데이터 생성
-                _context.UserInventories.Add(new UserInventory
+                context.UserInventories.Add(new UserInventory
                 {
                     UserId = userId,
                     ItemId = selectedItem.Id,
@@ -54,7 +47,7 @@ namespace ServerApi.Controllers
             }
 
             // 5. 변경사항 DB 저장
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
             // 6. 결과 반환
             return Ok(new

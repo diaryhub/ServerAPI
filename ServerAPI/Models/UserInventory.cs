@@ -23,5 +23,6 @@ namespace ServerApi.Models
 
         [ForeignKey("ItemId")]
         public Item Item { get; set; }
+        public DateTime ObtainedAt { get; set; } = DateTime.UtcNow;
     }
 }
