@@ -34,6 +34,10 @@ services:
     environment:
       # appsettings.json의 DB 연결 문자열을 환경 변수로 동적 덮어쓰기 (언더바 2개 주의)
       - "ConnectionStrings__DefaultConnection=Host=mydb;Port=5432;Database=${POSTGRES_DATABASE};Username=${POSTGRES_USERNAME};Password=${POSTGRES_ROOT_PASSWORD};"
+      - "ConnectionStrings__RedisConnection=redis:6379"
+      - "Jwt__Key=${JWT_KEY}"
+      - "Jwt__Issuer=${JWT_ISSUER}"
+      - "Jwt__Audience=${JWT_AUDIENCE}"
       - TZ=Asia/Seoul
     depends_on:
       - database # postgreSQL이 먼저 켜진 후 API 서버가 켜지도록 순서 보장

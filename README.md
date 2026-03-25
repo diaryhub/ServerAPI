@@ -2,10 +2,15 @@
 
 대규모 동시 접속(신규 픽업 배너 오픈) 시 발생하는 동시성 문제를 분석하고 원인을 파악하는 과정에 집중한 수집형 RPG 가챠 서버 API입니다. 게임의 핵심 비즈니스 로직(재화 차감 및 아이템 지급)에서 요구되는 엄격한 트랜잭션 정합성과 데이터 무결성 보장, 그리고 자동화된 CI/CD 배포 파이프라인 구축을 목표로 설계되었습니다.
 
+## 🌐 Demo
+* **런처 클라이언트:** https://demolauncher.vercel.app
+* **API 서버:** https://demolauncher.duckdns.org
+
 ## 🛠 Tech Stack
 * **Backend:** C# .NET 10.0, Entity Framework Core
 * **Database & Cache:** PostgreSQL, Redis
-* **Infra & CI/CD:** AWS EC2 (Ubuntu), Docker, GitHub Actions
+* **Infra & CI/CD:** AWS EC2 (Ubuntu), Docker, GitHub Actions, nginx, Let's Encrypt
+* **Frontend:** React + TypeScript + Vite (AI 코딩 도구 활용)
 * **Test & Metrics:** k6 (Load Testing), Postman
 * **Security:** JWT (JSON Web Token)
 
@@ -29,6 +34,11 @@
 * **Docker 컨테이너화:** PostgreSQL, Redis 및 .NET API 서버를 Docker 컨테이너로 패키징하여 로컬과 운영 환경의 일관성을 확보했습니다.
 * **CI 자동화(GitHub Actions):** `master` 브랜치 push 시 GitHub Actions Workflow가 트리거되어 빌드 및 단위 테스트를 자동으로 수행하고, 검증된 이미지를 Docker Hub에 푸시합니다.
 * **CD 운영 배포(수동 트리거):** CI 파이프라인을 통과한 이미지를 기반으로, AWS EC2(Ubuntu) 인스턴스에 SSH 접속하여 `docker pull` 및 `docker compose up`으로 운영 환경에 배포합니다. push와 동시에 운영 반영되는 것을 방지하기 위해 운영 배포는 의도적으로 수동 트리거로 분리했습니다.
+* **nginx 리버스 프록시 + HTTPS:** nginx를 리버스 프록시로 구성하고 Let's Encrypt SSL 인증서를 적용하여 HTTPS 통신을 확보했습니다. 프론트엔드(Vercel, HTTPS)와 백엔드 간 Mixed Content 문제를 해결했습니다.
+* **환경변수 기반 설정 분리:** 민감 정보(DB 접속 정보, JWT 키 등)를 `appsettings.json`에서 제거하고 Docker 환경변수로 주입하여 보안을 강화했습니다.
+
+## 🖥️ 프론트엔드 클라이언트
+백엔드 API의 실제 동작을 시연하기 위한 게임 런처 클라이언트를 React + TypeScript로 구성했습니다. UI 개발에는 AI 코딩 도구(Claude)를 활용하여 생산성을 높였으며, Vercel을 통해 배포했습니다. 포트폴리오의 핵심은 서버 사이드 설계이며, 프론트엔드는 API 연동 및 실제 서비스 흐름을 확인하기 위한 데모 클라이언트입니다.
 
 ---
 
