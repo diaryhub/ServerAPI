@@ -4,7 +4,7 @@
 
 ## 🌐 Demo
 * **런처 클라이언트:** https://demolauncher.vercel.app
-* **API 서버:** https://demolauncher.duckdns.org
+* **API 서버 (Swagger):** https://demolauncher.duckdns.org/swagger
 
 ## 🛠 Tech Stack
 * **Backend:** C# .NET 10.0, Entity Framework Core
