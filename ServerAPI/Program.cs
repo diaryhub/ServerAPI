@@ -4,11 +4,27 @@ using Microsoft.IdentityModel.Tokens;
 using ServerApi.Data;
 using System.Text;
 
+using ServerAPI.Services;
+using ServerAPI.Services.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins(
+                "http://localhost:5173",
+                "http://localhost:5174",
+                "https://*.vercel.app")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 // 1. 설정 파일에서 연결 문자열(주소) 가져오기
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -16,6 +32,11 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 // 2. DbContext 등록 (postgreSQL 연결 설정)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")).UseSnakeCaseNamingConvention());
+
+builder.Services.AddScoped<IGachaService, GachaService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ILauncherService, LauncherService>();
 
 builder.Services.AddStackExchangeRedisCache(options =>
 {
@@ -56,7 +77,8 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
 }
-app.UseRouting(); // [추가 권장] 명시적으로 라우팅 활성화
+app.UseRouting();
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication(); // [핵심] 반드시 UseAuthorization() 보다 먼저 호출되어야 합니다.
 

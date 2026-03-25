@@ -17,6 +17,27 @@ namespace ServerApi.Data
         public DbSet<GachaRate> GachaRates { get; set; } 
         public DbSet<GachaLog> GachaLogs { get; set; }
         public DbSet<GachaBanner> GachaBanners { get; set; }
+        public DbSet<Notice> Notices { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // 유저별 인벤토리 조회 최적화
+            modelBuilder.Entity<UserInventory>()
+                .HasIndex(ui => ui.UserId)
+                .HasDatabaseName("ix_user_inventories_user_id");
+
+            // 가챠 로그 유저별 조회 최적화
+            modelBuilder.Entity<GachaLog>()
+                .HasIndex(gl => gl.UserId)
+                .HasDatabaseName("ix_gacha_logs_user_id");
+
+            // 이메일 중복 방지 + 로그인 조회 최적화
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique()
+                .HasDatabaseName("ix_users_email");
+        }
     }
 }

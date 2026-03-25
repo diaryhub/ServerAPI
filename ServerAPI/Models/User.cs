@@ -10,9 +10,16 @@ namespace ServerApi.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Auto Increment (자동 증가)
         public int Id { get; set; }
 
-        [Required] // NOT NULL 설정
-        [MaxLength(50)] // VARCHAR(50) 크기 제한
+        [Required]
+        [MaxLength(50)]
         public string Nickname { get; set; } = string.Empty;
+
+        [Required]
+        [MaxLength(100)]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        public string PasswordHash { get; set; } = string.Empty;
 
         // 재화
         public int Currency { get; set; } = 0;

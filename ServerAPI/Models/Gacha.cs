@@ -15,11 +15,6 @@ namespace ServerAPI.Models
         public int Cost { get; set; }
     }
 
-    public class GachaRequest
-    {
-        public int BannerId { get; set; } // 유저가 돌릴 배너 ID
-    }
-
     [Table("gacha_rates")]
     public class GachaRate
     {

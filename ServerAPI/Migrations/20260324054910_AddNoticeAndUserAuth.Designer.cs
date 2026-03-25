@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ServerApi.Data;
@@ -11,9 +12,11 @@ using ServerApi.Data;
 namespace ServerAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260324054910_AddNoticeAndUserAuth")]
+    partial class AddNoticeAndUserAuth
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,9 +80,6 @@ namespace ServerAPI.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_gacha_logs");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_gacha_logs_user_id");
 
                     b.ToTable("gacha_logs", (string)null);
                 });
@@ -215,10 +215,6 @@ namespace ServerAPI.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_users");
-
-                    b.HasIndex("Email")
-                        .IsUnique()
-                        .HasDatabaseName("ix_users_email");
 
                     b.ToTable("users", (string)null);
                 });
