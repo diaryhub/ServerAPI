@@ -13,6 +13,7 @@ namespace ServerAPI.Models
         public DateTime StartTime { get; set; } // 시작 시간
         public DateTime EndTime { get; set; }   // 종료 시간
         public int Cost { get; set; }
+        public string? ImageUrl { get; set; }
     }
 
     [Table("gacha_rates")]

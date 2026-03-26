@@ -55,6 +55,37 @@ namespace ServerAPI.Services
             return status;
         }
 
+        public async Task<IEnumerable<BannerResponseDto>> GetBannersAsync()
+        {
+            const string cacheKey = "launcher_banners";
+
+            var cached = await cache.GetStringAsync(cacheKey);
+            if (cached != null)
+                return JsonSerializer.Deserialize<IEnumerable<BannerResponseDto>>(cached)!;
+
+            var now = DateTime.UtcNow;
+            var banners = await db.GachaBanners
+                .Where(b => b.StartTime <= now && b.EndTime >= now)
+                .OrderBy(b => b.StartTime)
+                .Select(b => new BannerResponseDto
+                {
+                    Id = b.Id,
+                    Name = b.Name,
+                    StartTime = b.StartTime.ToString("yyyy-MM-dd HH:mm"),
+                    EndTime = b.EndTime.ToString("yyyy-MM-dd HH:mm"),
+                    Cost = b.Cost,
+                    ImageUrl = b.ImageUrl
+                })
+                .ToListAsync();
+
+            await cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(banners), new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+            });
+
+            return banners;
+        }
+
         public async Task<VersionResponseDto> GetVersionAsync()
         {
             const string cacheKey = "launcher_version";

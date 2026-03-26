@@ -27,5 +27,12 @@ namespace ServerAPI.Controllers
             var version = await launcherService.GetVersionAsync();
             return Ok(version);
         }
+
+        [HttpGet("banners")]
+        public async Task<IActionResult> GetBanners()
+        {
+            var banners = await launcherService.GetBannersAsync();
+            return Ok(banners);
+        }
     }
 }

@@ -7,5 +7,6 @@ namespace ServerAPI.Services.Interfaces
         Task<IEnumerable<NoticeResponseDto>> GetNoticesAsync();
         Task<string> GetServerStatusAsync();
         Task<VersionResponseDto> GetVersionAsync();
+        Task<IEnumerable<BannerResponseDto>> GetBannersAsync();
     }
 }
