@@ -6,6 +6,8 @@
 * **런처 클라이언트:** https://demolauncher.vercel.app
 * **API 서버 (Swagger):** https://demolauncher.duckdns.org/swagger
 
+> 관련 프로젝트: [BackOffice](https://github.com/diaryhub/BackOffice) · [WebLauncher](https://github.com/diaryhub/demo_launcher)
+
 ## 🛠 Tech Stack
 * **Backend:** C# .NET 10.0, Entity Framework Core
 * **Database & Cache:** PostgreSQL, Redis
