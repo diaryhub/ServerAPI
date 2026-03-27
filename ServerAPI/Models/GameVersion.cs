@@ -17,7 +17,7 @@ namespace ServerApi.Models
         [Required]
         public string PatchNote { get; set; } = string.Empty;
 
-        public DateTime ReleaseDate { get; set; }
+        public DateOnly ReleaseDate { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
