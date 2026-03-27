@@ -18,6 +18,7 @@ namespace ServerApi.Data
         public DbSet<GachaLog> GachaLogs { get; set; }
         public DbSet<GachaBanner> GachaBanners { get; set; }
         public DbSet<Notice> Notices { get; set; }
+        public DbSet<GameVersion> GameVersions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

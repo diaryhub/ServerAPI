@@ -94,12 +94,23 @@ namespace ServerAPI.Services
             if (cached != null)
                 return JsonSerializer.Deserialize<VersionResponseDto>(cached)!;
 
-            var version = new VersionResponseDto
-            {
-                Version = configuration["Launcher:Version"] ?? "1.0.0",
-                PatchNote = configuration["Launcher:PatchNote"] ?? "",
-                ReleaseDate = configuration["Launcher:ReleaseDate"] ?? ""
-            };
+            var latest = await db.GameVersions
+                .OrderByDescending(v => v.ReleaseDate)
+                .FirstOrDefaultAsync();
+
+            var version = latest != null
+                ? new VersionResponseDto
+                {
+                    Version = latest.Version,
+                    PatchNote = latest.PatchNote,
+                    ReleaseDate = latest.ReleaseDate.ToString("yyyy-MM-dd")
+                }
+                : new VersionResponseDto
+                {
+                    Version = configuration["Launcher:Version"] ?? "1.0.0",
+                    PatchNote = configuration["Launcher:PatchNote"] ?? "",
+                    ReleaseDate = configuration["Launcher:ReleaseDate"] ?? ""
+                };
 
             await cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(version), new DistributedCacheEntryOptions
             {
