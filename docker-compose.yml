@@ -1,69 +1,21 @@
-version: '3.8'
-
 services:
-  database:
-    image: postgres:15
-    restart: always
-    container_name: PostgreSQL-Server
-    hostname: mydb
-    environment:
-      POSTGRES_DB: ${POSTGRES_DATABASE}
-      POSTGRES_USER: ${POSTGRES_USERNAME}
-      POSTGRES_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
-      TZ: Asia/Seoul
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USERNAME} -d ${POSTGRES_DATABASE}"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
 
-  redis:
-    image: redis:alpine
-    restart: always
-    container_name: game_redis
-    ports:
-      - "6379:6379"
-    environment:
-      TZ: Asia/Seoul
-
-  # 새로 추가된 API 서버 블록
   server-api:
     image: dockdiary/server-api:latest
     restart: always
     container_name: server_api
     ports:
-      - "8080:8080" # 외부 접속 포트 8080을 컨테이너 내부 8080으로 연결 (.NET 8.0 기본 포트)
+      - "8080:8080"
     environment:
-      # appsettings.json의 DB 연결 문자열을 환경 변수로 동적 덮어쓰기 (언더바 2개 주의)
       - "ConnectionStrings__DefaultConnection=Host=mydb;Port=5432;Database=${POSTGRES_DATABASE};Username=${POSTGRES_USERNAME};Password=${POSTGRES_ROOT_PASSWORD};"
-      - "ConnectionStrings__RedisConnection=redis:6379"
+      - "ConnectionStrings__RedisConnection=game_redis:6379"
       - "Jwt__Key=${JWT_KEY}"
       - "Jwt__Issuer=${JWT_ISSUER}"
       - "Jwt__Audience=${JWT_AUDIENCE}"
       - TZ=Asia/Seoul
-    depends_on:
-      database:
-        condition: service_healthy
+    networks:
+      - serverdb_default
 
-  backoffice:
-    image: dockdiary/backoffice:latest
-    restart: always
-    container_name: backoffice
-    ports:
-      - "8081:8081"
-    environment:
-      - "SPRING_DATASOURCE_URL=jdbc:postgresql://mydb:5432/${POSTGRES_DATABASE}"
-      - "SPRING_DATASOURCE_USERNAME=${POSTGRES_USERNAME}"
-      - "SPRING_DATASOURCE_PASSWORD=${POSTGRES_ROOT_PASSWORD}"
-      - "JWT_SECRET=${BO_JWT_SECRET}"
-      - TZ=Asia/Seoul
-    depends_on:
-      database:
-        condition: service_healthy
-
-volumes:
-  postgres_data:
+networks:
+  serverdb_default:
+    external: true
