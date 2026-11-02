@@ -2,10 +2,6 @@
 
 대규모 동시 접속(신규 픽업 배너 오픈) 시 발생하는 동시성 문제를 분석하고 원인을 파악하는 과정에 집중한 수집형 RPG 가챠 서버 API입니다. 게임의 핵심 비즈니스 로직(재화 차감 및 아이템 지급)에서 요구되는 엄격한 트랜잭션 정합성과 데이터 무결성 보장, 그리고 자동화된 CI/CD 배포 파이프라인 구축을 목표로 설계되었습니다.
 
-## 🌐 Demo
-* **런처 클라이언트:** https://demolauncher.vercel.app
-* **API 서버 (Swagger):** https://demolauncher.duckdns.org/swagger
-
 > 관련 프로젝트: [BackOffice](https://github.com/diaryhub/BackOffice) · [WebLauncher](https://github.com/diaryhub/demo_launcher)
 
 ## 🛠 Tech Stack
